@@ -1,0 +1,106 @@
+PATIENT MEDICAL RECORD
+PATIENT INFORMATION
+Name: Sarah Johnson
+DOB: 03/15/1982 (43 years)
+MRN: 45872163
+Gender: Female
+Contact: (555) 123-4567
+Address: 1234 Maple Street, Springfield
+Insurance: BlueCross HealthPlus #BC987654321
+VITAL SIGNS (04/15/2025)
+
+Blood Pressure: 138/88 mmHg
+Heart Rate: 82 bpm
+Respiratory Rate: 16/min
+Temperature: 98.6°F (37°C)
+Height: 5'6" (168 cm)
+Weight: 174 lbs (79 kg)
+BMI: 28.1
+
+CHIEF COMPLAINT
+Patient presents with persistent fatigue, increased thirst, frequent urination, and unexplained weight loss of approximately 8 pounds over the past 2 months.
+HISTORY OF PRESENT ILLNESS
+Patient reports gradual onset of symptoms beginning approximately 3 months ago. Initially noticed increased thirst and more frequent urination, particularly at night (2-3 times). Reports feeling constantly tired despite sleeping 7-8 hours nightly. Denies fever, chills, or night sweats. Has experienced blurred vision occasionally over the past 3 weeks. No recent travel or known sick contacts.
+PAST MEDICAL HISTORY
+
+Gestational diabetes during pregnancy (2013)
+Hypertension (diagnosed 2019, managed with medication)
+Hypercholesterolemia (diagnosed 2020)
+Appendectomy (2010)
+
+MEDICATIONS
+
+Lisinopril 10mg daily
+Atorvastatin 20mg daily
+Multivitamin daily
+Occasional ibuprofen for headaches
+
+ALLERGIES
+
+Penicillin (hives)
+Sulfa drugs (rash)
+
+FAMILY HISTORY
+
+Father: Type 2 diabetes, died age 68 (myocardial infarction)
+Mother: Hypertension, alive age 72
+Sister: Hypothyroidism
+Maternal grandmother: Type 2 diabetes
+
+SOCIAL HISTORY
+
+Occupation: Elementary school teacher
+Married with 2 children
+Alcohol: 1-2 glasses of wine weekly
+Tobacco: Never smoker
+Exercise: Limited, walks 20 minutes 1-2 times weekly
+Diet: Reports frequent consumption of processed foods and sugary beverages
+
+PHYSICAL EXAMINATION
+
+General: Alert, oriented, appears fatigued but in no acute distress
+HEENT: Pupils equal, reactive to light; oropharynx clear; no thyromegaly
+Cardiovascular: Regular rate and rhythm, no murmurs, rubs, or gallops
+Respiratory: Clear to auscultation bilaterally, normal respiratory effort
+Abdominal: Soft, non-tender, non-distended, no hepatosplenomegaly
+Extremities: No edema, pulses intact, no lesions noted on feet
+Neurological: Grossly intact, sensation slightly diminished in feet bilaterally
+
+LABORATORY RESULTS (04/15/2025)
+
+Fasting Blood Glucose: 176 mg/dL (Reference: 70-99 mg/dL) HIGH
+HbA1c: 7.9% (Reference: <5.7%) HIGH
+Complete Blood Count: Within normal limits
+Comprehensive Metabolic Panel:
+
+Sodium: 138 mEq/L (Reference: 135-145 mEq/L)
+Potassium: 4.2 mEq/L (Reference: 3.5-5.0 mEq/L)
+Chloride: 101 mEq/L (Reference: 98-107 mEq/L)
+CO2: 24 mEq/L (Reference: 22-30 mEq/L)
+BUN: 15 mg/dL (Reference: 7-20 mg/dL)
+Creatinine: 0.9 mg/dL (Reference: 0.6-1.2 mg/dL)
+eGFR: >90 mL/min/1.73m²
+ALT: 32 U/L (Reference: 7-56 U/L)
+AST: 28 U/L (Reference: 10-40 U/L)
+
+
+Lipid Panel:
+
+Total Cholesterol: 212 mg/dL (Reference: <200 mg/dL) HIGH
+LDL: 135 mg/dL (Reference: <100 mg/dL) HIGH
+HDL: 42 mg/dL (Reference: >40 mg/dL)
+Triglycerides: 175 mg/dL (Reference: <150 mg/dL) HIGH
+
+
+Urinalysis:
+
+Glucose: Positive (Reference: Negative) ABNORMAL
+Protein: Negative
+Ketones: Trace (Reference: Negative) ABNORMAL
+
+
+
+ASSESSMENT
+Patient presenting with classic symptoms of hyperglycemia, laboratory values consistent with new-onset Type 2 Diabetes Mellitus. Patient has multiple risk factors including family history, personal history of gestational diabetes, sedentary lifestyle, and dietary habits. Concurrently managing hypertension and hypercholesterolemia.
+NOTES
+Further evaluation needed for potential diabetic neuropathy given reduced sensation in feet. Comprehensive diabetes education recommended. Consider referral to endocrinology and nutrition counseling.

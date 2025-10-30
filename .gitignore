@@ -1,0 +1,7 @@
+myenv/
+.git.bfg-report/
+*.pyc
+__pycache__/
+.env
+chroma_db/chroma.sqlite3
+flask_session/

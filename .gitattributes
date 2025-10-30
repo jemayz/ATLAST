@@ -1,0 +1,2 @@
+medical_dataset/medqa.csv filter=lfs diff=lfs merge=lfs -text
+chroma_db/**/*.bin filter=lfs diff=lfs merge=lfs -text
