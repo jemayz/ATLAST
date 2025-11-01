@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MultiDom RAG</title>
+    <title>MultiDom RAG - Insurance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -15,8 +15,7 @@
         theme: {
           extend: {
             colors: {
-              // CHANGED: Swapped Blue for Gold/Yellow (Amber)
-              primary: { light: "#D97706", dark: "#F59E0B" }, // Was: 3B82F6 / 579be8
+              primary: { dark: "#579be8", light: "#3B82F6" },
               secondary: { dark: "#9F1239", light: "#EC4899" },
               accent: { dark: "#047857", light: "#10B981" },
               dark: { 900: "#0F172A", 800: "#1E293B", 700: "#334155" },
@@ -65,8 +64,7 @@
         left: 0;
         width: 0%;
         height: 4px;
-        /* CHANGED: Updated gradient to match new primary color */
-        background: linear-gradient(90deg, #d97706, #ec4899, #10b981);
+        background: linear-gradient(90deg, #3b82f6, #ec4899, #10b981);
         z-index: 1000;
         transition: width 0.1s;
       }
@@ -100,10 +98,9 @@
         <div class="flex justify-between h-16 items-center">
           <div class="flex items-center">
             <i
-              class="fa-solid fa-shield-alt text-primary-light dark:text-primary-dark text-2xl mr-5"
+              class="fa-solid fa-file-medical text-amber-400 dark:text-amber-400 text-2xl mr-5"
             ></i>
-            <span
-              class="text-2xl font-bold text-primary-light dark:text-primary-dark"
+            <span class="text-2xl font-bold text-amber-400 dark:text-amber-400"
               >MultiDom RAG</span
             >
           </div>
@@ -115,7 +112,7 @@
             >
             <div class="relative group">
               <button
-                class="border-primary-light dark:border-primary-dark text-gray-900 dark:text-white inline-flex items-center px-1 pt-1 border-b-2 text-xl border-b-2"
+                class="border-amber-400 dark:border-amber-400 text-gray-900 dark:text-white inline-flex items-center px-1 pt-1 border-b-2 text-xl border-b-2"
               >
                 Demo
                 <svg
@@ -177,7 +174,7 @@
               ><i class="fas fa-sun hidden dark:block"></i>
             </button>
             <a
-              class="ml-4 bg-primary-light dark:bg-primary-dark text-white px-4 py-2 rounded-md font-medium transition duration-300 hover:scale-105 transform ripple"
+              class="ml-4 bg-amber-400 dark:bg-amber-400 text-white text-md px-6 py-2 rounded-md font-medium"
               >Insurance</a
             >
           </div>
@@ -193,41 +190,35 @@
         {% if not history %}
         <div class="text-center py-10">
           <i
-            class="fa-solid fa-shield-alt text-primary-light dark:text-primary-dark text-6xl mb-4 animate-float"
+            class="fa-solid fa-shield-halved text-amber-400 dark:text-amber-400 text-6xl mb-4 animate-float"
           ></i>
           <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-            Insurance Advisor (RAG & Swarm)
+            Insurance Assistant (RAG)
           </h2>
           <p class="text-lg text-gray-500 dark:text-gray-400">
-            Ask an insurance question, upload a policy image, or upload a
-            document for swarm analysis.
+            Ask a question about Etiqa Takaful (Motor & Car policies).
           </p>
         </div>
         {% endif %} {% for chat in history[:-1] %} {% if chat.type == 'human' %}
         <div class="flex justify-end w-full">
           <div
-            class="bg-primary-light text-white p-4 rounded-xl shadow-md max-w-2xl"
+            class="bg-amber-400 text-white p-4 rounded-xl shadow-md max-w-2xl"
           >
             <p>
               {{ chat.content if chat.content is string else
               chat.content.content }}
             </p>
-            {% if chat.content and '[Document Uploaded]' in chat.content %}<span
-              class="text-xs text-blue-200 pt-2 block"
-              ><i class="fas fa-file-alt mr-1"></i> Document Uploaded</span
-            >{% endif %}
           </div>
         </div>
 
         {% elif chat.type == 'ai' %}
         <div class="w-full max-w-2xl space-y-4">
-          {% set answer_text = chat.content %}
           <div>
             <div
               class="flex items-center text-sm text-gray-800 dark:text-white mb-2 ml-1"
             >
               <i
-                class="fa-solid fa-shield-alt text-primary-light dark:text-primary-dark mr-2"
+                class="fa-solid fa-file-medical text-amber-400 dark:text-amber-400 mr-2"
               ></i>
               <strong class="font-semibold">MultiDom RAG</strong>
             </div>
@@ -249,7 +240,7 @@
               class="flex items-center text-sm text-gray-500 dark:text-gray-400 cursor-pointer mb-2 ml-1"
             >
               <i
-                class="fas fa-atom mr-2 animate-spin-slow text-primary-light inline-block"
+                class="fas fa-atom mr-2 animate-spin-slow text-amber-400 inline-block"
               ></i>
               <span>Thinking... view source & thoughts...</span>
             </summary>
@@ -261,9 +252,7 @@
                 <h4 class="font-semibold text-gray-700 dark:text-gray-300">
                   Source:
                 </h4>
-                <p
-                  class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap"
-                >
+                <p class="text-sm text-gray-600 dark:text-gray-400">
                   {{ source }}
                 </p>
               </div>
@@ -272,7 +261,7 @@
                 <summary
                   class="font-semibold text-medium text-gray-700 dark:text-gray-400 cursor-pointer"
                 >
-                  View Agent Thoughts (ReAct Process)
+                  View Agent Thoughts (ReAct Process):
                 </summary>
                 <p
                   class="text-sm mt-2 p-2 bg-gray-200 dark:bg-dark-900 rounded whitespace-pre-line"
@@ -285,10 +274,9 @@
                 <h4 class="font-semibold text-gray-700 dark:text-gray-300">
                   Validation:
                 </h4>
-                <p
-                  class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap"
-                >
-                  {{ validation }}
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ validation[1] }}
+                  <!-- Display the text part of the tuple -->
                 </p>
               </div>
               {% endif %}
@@ -300,7 +288,7 @@
               class="flex items-center text-sm text-gray-800 dark:text-white mb-2 ml-1"
             >
               <i
-                class="fa-solid fa-shield-alt text-primary-light dark:text-primary-dark mr-2"
+                class="fa-solid fa-file-medical text-amber-400 dark:text-amber-400 mr-2"
               ></i>
               <strong class="font-semibold">MultiDom RAG</strong>
             </div>
@@ -308,7 +296,7 @@
               class="bg-white dark:bg-dark-700 border dark:border-dark-600 rounded-xl shadow-md p-5"
             >
               <p
-                class="text-gray-800 dark:text-white whitespace-pre-wrap text-left"
+                class="text-gray-800 dark:text-white text-left whitespace-pre-line"
               >
                 {{ answer|safe }}
               </p>
@@ -328,50 +316,18 @@
         enctype="multipart/form-data"
         class="relative max-w-5xl mx-auto flex items-center space-x-3 p-4"
       >
-        <div
-          id="upload-menu"
-          class="absolute bottom-20 left-0 w-52 bg-white dark:bg-dark-700 border dark:border-dark-600 rounded-lg shadow-lg py-2 z-10 hidden"
-        >
-          <button
-            type="button"
-            id="upload-image-btn"
-            class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-600 flex items-center"
-          >
-            <i class="fas fa-image mr-3"></i> Upload Image
-          </button>
-          <button
-            type="button"
-            id="upload-doc-btn"
-            class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-600 flex items-center"
-          >
-            <i class="fas fa-file-alt mr-3"></i> Upload Document
-          </button>
-        </div>
-        <button
-          type="button"
-          id="upload-toggle"
-          class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full transition-colors"
-        >
-          <i class="fas fa-plus text-xl"></i>
-        </button>
-        <input type="file" id="file-upload" name="image" class="hidden" />
-        <input type="file" id="doc-upload" name="document" class="hidden" />
+        <!-- Removed upload button and file name display -->
         <input
           type="text"
           id="query"
           name="query"
           required
-          class="flex-1 px-4 py-3 rounded-lg bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 focus:outline-none focus:ring-2 focus:ring-primary-light"
-          placeholder="Ask an insurance question or include an upload..."
+          class="flex-1 px-4 py-3 rounded-lg bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
+          placeholder="Ask about Etiqa Motor & Car Takaful..."
         />
-        <span
-          id="file-name-display"
-          class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs"
-          title=""
-        ></span>
         <button
           type="submit"
-          class="p-3 bg-primary-light hover:bg-primary-dark text-white rounded-full transition-colors shadow-lg hover:scale-105 transform ripple"
+          class="p-3 bg-amber-400 hover:bg-accent-light text-white rounded-full transition-colors shadow-lg hover:scale-105 transform ripple"
         >
           <i class="fas fa-paper-plane"></i>
         </button>
@@ -379,7 +335,6 @@
     </footer>
 
     <script>
-      // --- THEME TOGGLE SCRIPT (No changes needed) ---
       const themeToggle = document.getElementById("theme-toggle"),
         html = document.documentElement;
       themeToggle.addEventListener("click", () => {
@@ -397,7 +352,6 @@
         html.classList.add("dark");
       }
 
-      // --- GENERAL PAGE SCRIPT (No changes needed) ---
       document.addEventListener("DOMContentLoaded", () => {
         window.addEventListener("scroll", () => {
           const scrollTop =
@@ -426,75 +380,9 @@
           });
         });
 
-        // --- UPLOAD LOGIC SCRIPT (No changes needed) ---
-        const uploadToggle = document.getElementById("upload-toggle"),
-          uploadMenu = document.getElementById("upload-menu"),
-          uploadImageBtn = document.getElementById("upload-image-btn"),
-          uploadDocBtn = document.getElementById("upload-doc-btn"),
-          fileUploadInput = document.getElementById("file-upload"), // For images
-          docUploadInput = document.getElementById("doc-upload"), // For documents
-          fileNameDisplay = document.getElementById("file-name-display");
+        // --- All JavaScript related to upload button, menu, and file inputs has been removed ---
 
-        const clearFileInputs = () => {
-          fileUploadInput.value = null;
-          docUploadInput.value = null;
-          fileNameDisplay.textContent = "";
-          fileNameDisplay.title = "";
-        };
-
-        if (uploadToggle)
-          uploadToggle.addEventListener("click", (e) => {
-            e.stopPropagation();
-            uploadMenu.classList.toggle("hidden");
-          });
-
-        if (uploadImageBtn)
-          uploadImageBtn.addEventListener("click", () => {
-            clearFileInputs();
-            fileUploadInput.accept = "image/*";
-            fileUploadInput.click();
-            uploadMenu.classList.add("hidden");
-          });
-
-        if (uploadDocBtn)
-          uploadDocBtn.addEventListener("click", () => {
-            clearFileInputs();
-            docUploadInput.accept = ".pdf,.doc,.docx,.txt";
-            docUploadInput.click();
-            uploadMenu.classList.add("hidden");
-          });
-
-        if (fileUploadInput)
-          fileUploadInput.addEventListener("change", () => {
-            const file = fileUploadInput.files[0];
-            if (file) {
-              fileNameDisplay.textContent = file.name;
-              fileNameDisplay.title = file.name;
-              docUploadInput.value = null;
-            }
-          });
-
-        if (docUploadInput)
-          docUploadInput.addEventListener("change", () => {
-            const file = docUploadInput.files[0];
-            if (file) {
-              fileNameDisplay.textContent = file.name;
-              fileNameDisplay.title = file.name;
-              fileUploadInput.value = null;
-            }
-          });
-
-        document.addEventListener("click", (e) => {
-          if (
-            uploadMenu &&
-            !uploadMenu.classList.contains("hidden") &&
-            !uploadToggle.contains(e.target)
-          ) {
-            uploadMenu.classList.add("hidden");
-          }
-        });
-
-        // --- SCROLL TO BOTTOM SCRIPT (No changes needed) ---
+        // Scroll to bottom on load
         setTimeout(() => {
           const chatHistoryDiv = document.getElementById("chat-history");
           if (chatHistoryDiv) {

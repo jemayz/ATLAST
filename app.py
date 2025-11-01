@@ -49,8 +49,10 @@ logger.info("🌟 Starting Multi-Domain AI Assistant...")
 
 rag_systems = {
     'medical': load_rag_system(collection_name="medical_csv_Agentic_retrieval", domain="medical"),
-    'islamic': load_rag_system(collection_name="islamic_texts_Agentic_retrieval", domain="islamic")
+    'islamic': load_rag_system(collection_name="islamic_texts_Agentic_retrieval", domain="islamic"),
+    'insurance': load_rag_system(collection_name="etiqa_Agentic_retrieval", domain="insurance")
 }
+
 # Store the loaded systems and llm on the app itself
 # This allows the blueprint to access them using 'current_app'
 app.rag_systems = rag_systems
@@ -73,6 +75,7 @@ def homePage():
     # Clear all session history when visiting the home page
     session.pop('medical_history', None)
     session.pop('islamic_history', None)
+    session.pop('insurance_history', None)
     session.pop('current_medical_document', None)
     return render_template("homePage.html")
 
@@ -358,6 +361,71 @@ def clear_islamic_chat():
     session.pop('islamic_history', None)
     logger.info("Islamic chat history cleared.")
     return redirect(url_for('islamic_page'))
+
+@app.route("/insurance", methods=["GET", "POST"])
+def insurance_page():
+    if request.method == "GET" :
+        latest_response = session.pop('latest_insurance_response',{})
+        
+        answer = latest_response.get('answer', "")
+        thoughts = latest_response.get('thoughts', "")
+        validation = latest_response.get('validation', "")
+        source = latest_response.get('source', "")
+        
+        if not latest_response and 'insurance_history' not in session:
+            session.pop('insurance_history', None)
+        
+        return render_template("insurance_page.html", # You will need to create this HTML file
+                                history=session.get('insurance_history', []),
+                                answer=answer,
+                                thoughts=thoughts,
+                                validation=validation,
+                                source=source)
+    
+    # POST Request Logic
+    answer, thoughts, validation, source = "", "", "", ""
+    history = session.get('insurance_history', [])
+    
+    try:
+        query = standardize_query(request.form.get("query", ""))
+        
+        if query:
+            logger.info("Processing Text RAG query for Insurance domain")
+            standalone_query = get_standalone_question(query, history, llm)
+            logger.info(f"Original Query: '{query}'")
+            logger.info(f"Standalone Query: '{standalone_query}'")
+            
+            agent = rag_systems['insurance']
+            response_dict = agent.answer(standalone_query, chat_history=history)
+            answer, thoughts, validation, source = parse_agent_response(response_dict)
+            
+            history.append(HumanMessage(content=query))
+            history.append(AIMessage(content=answer))
+        else:
+            raise ValueError("No query provided.")
+
+    except Exception as e:
+        logger.error(f"Error on /insurance page: {e}", exc_info=True)
+        answer = f"An error occurred: {e}"
+        thoughts = traceback.format_exc()
+            
+    session['insurance_history'] = history
+    session['latest_insurance_response'] = {
+        'answer': answer, 
+        'thoughts': thoughts, 
+        'validation': validation, 
+        'source': source
+    }
+    session.modified = True
+                        
+    logger.debug(f"Redirecting after saving latest response.")
+    return redirect(url_for('insurance_page'))
+
+@app.route("/insurance/clear")
+def clear_insurance_chat():
+    session.pop('insurance_history', None)
+    logger.info("Insurance chat history cleared.")
+    return redirect(url_for('insurance_page'))
 
 @app.route("/about", methods=["GET"])
 def about():

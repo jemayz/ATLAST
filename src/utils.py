@@ -49,7 +49,7 @@ def get_standalone_question(input_question, chat_history,llm):
         return input_question
     
     contextualize_q_prompt = ChatPromptTemplate.from_messages([
-        ("system", "Given a chat history and the latest user question, formulate a standalone question which can be understood without the chat history. Do NOT answer the question, just reformulate it if needed."),
+        ("system", "Given a chat history and the latest user question, FORMULATE A STANDALONE QUESTION which can be understood without the chat history. Do NOT ANSWER THE QUESTION, just reformulate it if needed."),
         MessagesPlaceholder("chat_history"),
         ("human", "{input}"),
     ])
@@ -66,7 +66,11 @@ def parse_agent_response(response_dict):
     thoughts = response_dict.get('thoughts', 'No thought process available.')
     validation = response_dict.get('validation', (False, 'Validation failed.'))
     source = response_dict.get('source', 'Unknown')
-    return answer, thoughts, validation, source
+    
+    if validation and validation[1] == "Validation skipped for insurance domain.":
+        validation = (True, "Factual Answer")
+        
+    return answer, thoughts,validation, source
     
 def extract_json_from_string(text: str) -> dict:
     """

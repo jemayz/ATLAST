@@ -108,32 +108,41 @@ class AgenticQA:
              ("human", "{input}")]
         )
         self.qa_system_prompt = (
-            "You are an assistant that answers questions in either a medical or Islamic domain for citizens mainly in Malaysia, "
+            "You are an assistant that answers questions in a specific domain for citizens mainly in Malaysia, "
             "depending on the context. "
             "You will receive:\n"
-            "  • domain = {domain}  (either 'medical' or 'islamic')\n"
+            "  • domain = {domain}  (either 'medical', 'islamic' , or 'insurance')\n"
             "  • context = relevant retrieved passages\n"
             "  • user question\n\n"
-            "Instructions:\n"
-            "1. If domain = 'medical', answer the question in clear, simple layperson language, "
-            "citing your sources (e.g. article name, section). Add a medical disclaimer: “I am not a doctor…”.\n"
+            "Instructions based on domain:\n"
+            "1. If domain = 'medical' :\n"
+            "   - Answer the question in clear, simple layperson language, "
+            "   - Citing your sources (e.g. article name, section)."
+            "   - Add a medical disclaimer: “I am not a doctor…”.\n"
             "2. If domain = 'islamic':\n"
-            "   a) **ALWAYS present both Shafi'i AND Maliki perspectives** if the question is about fiqh/rulings\n"
-            "   c) **Cite specific sources**: Always mention the book name (e.g., 'According to Muwatta Imam Malik...', "
-            "'Minhaj al-Talibin states...', 'Umdat al-Salik explains...')\n"
-            "   d) **Structure answer as**:\n" 
+            "   - **ALWAYS present both Shafi'i AND Maliki perspectives** if the question is about fiqh/rulings\n"
+            "   - **Cite specific sources**: Always mention the book name (e.g., 'According to Muwatta Imam Malik...', 'Minhaj al-Talibin states...', 'Umdat al-Salik explains...')\n"
+            "   - **Structure answer as**:\n" 
             "      - Shafi'i view (from Umdat al-Salik/Minhaj): [ruling with citation]\n"
             "      - Maliki view (from Muwatta): [ruling with citation]\n"
             "      - If they agree: mention the consensus\n"
             "      - If they differ: present both views objectively without favoring one\n"
-            "   e) **For hadith questions**: provide the narration text, source (book name, hadith number), "
-            "and authenticity grading if available\n"
-            "   f) **Always end with**: 'This is not a fatwa. Consult a local scholar for guidance specific to your situation.'\n"
+            "   - **For hadith questions**: provide the narration text, source (book name, hadith number), "
+            "       and authenticity grading if available\n"
+            "   - If the context does not contain relevant information from BOTH madhabs, acknowledge which sources you have "
+            "      (e.g., 'Based on Shafi'i sources only...') and suggest consulting additional madhab resources.\n"
+            "   - **Always end with**: 'This is not a fatwa. Consult a local scholar for guidance specific to your situation.'\n"
+            "   - Keep answers concise but comprehensive enough to show different scholarly views.\n\n"
             
-            "3. If the context does not contain relevant information from BOTH madhabs, acknowledge which sources you have "
-            "(e.g., 'Based on Shafi'i sources only...') and suggest consulting additional madhab resources.\n"
-            
-            "4. Keep answers concise but comprehensive enough to show different scholarly views.\n\n"
+            "3. If domain = 'insurance':\n"
+            "   - Your knowledge is STRICTLY limited to Etiqa Takaful (Motor and Car policies).\n"
+            "   - First, try to answer ONLY using the provided <context>.\n"
+            "   - **If the answer is not in the context, YOU MUST SAY 'I do not have information on that specific topic.'** Do not make up an answer.\n"
+            "   - If the user asks about other Etiqa products (e.g., medical, travel), you MUST use the 'EtiqaWebSearch' tool.\n"
+            "   - If the user asks about another insurance company (e.g., 'Prudential', 'Takaful Ikhlas'), state that you can only answer about Etiqa Takaful.\n"
+            "   - If the user asks a general insurance question (e.g., 'What is takaful?', 'What is an excess?'), use the 'GeneralWebSearch' tool.\n"
+                    
+            "4. For ALL domains: If the context does not contain the answer, do not make one up. Be honest.\n\n"
             "Context:\n"
             "{context}"
             )
@@ -151,6 +160,7 @@ class AgenticQA:
         self.agent_executor = None
         self.tools = [] # Initialize the attribute
         self.domain = "general"
+        self.answer_validator = None
 
         if config:
             logger.info(f"Configuring AgenticQA with provided config: {config}")
@@ -172,6 +182,8 @@ class AgenticQA:
                 # 3. Set the retriever for this instance
                 self.retriever = db_client.as_retriever()
                 logger.info(f"✅ Successfully created retriever for collection '{collection_name}'")
+                # Initialize validator *after* setting domain
+                self.answer_validator = AnswerValidatorAgent(self.llm, self.domain)
                 self._initialize_agent()
                 
             except Exception as e:
@@ -199,14 +211,42 @@ class AgenticQA:
                     "chat_history": kwargs.get("chat_history", []),
                     "domain": self.domain
                 })["answer"],
-                description=(f"Use this tool first to search and answer questions about the {self.domain} domain.Retrieve context from the {self.domain} vector database.")
-            ),
-            Tool(
-                name="WebSearch",
-                func=lambda query, **kwargs: TavilySearchResults(max_results=2).invoke(query),
-                description=("Use this tool as a fallback if the RAG tool finds no relevant information or if the query is about a general topic.")
+                description=(f"Use this tool first to search and answer questions about the {self.domain} domain using internal vector database.")
             )
+            
         ]
+        
+        # --- DOMAIN-SPECIFIC TOOLS ---
+        if self.domain == "insurance":
+            # Add a specific tool for searching Etiqa's website
+            etiqa_search_tool = TavilySearchResults(max_results=3)
+            etiqa_search_tool.description = "Use this tool to search the Etiqa Takaful website for products NOT in the RAG context (e.g., medical, travel)."
+            # This is a bit of a "hack" to force Tavily to search a specific site.
+            # We modify the function it calls.
+            original_etiqa_func = etiqa_search_tool.invoke
+            def etiqa_site_search(query):
+                return original_etiqa_func(f"site:etiqa.com.my {query}")
+            
+            self.tools.append(Tool(
+                name="EtiqaWebSearch",
+                func=etiqa_site_search,
+                description=etiqa_search_tool.description
+            ))
+            
+            # Add a general web search tool
+            self.tools.append(Tool(
+                name="GeneralWebSearch",
+                func=TavilySearchResults(max_results=2).invoke,
+                description="Use this tool as a fallback for general, non-Etiqa questions (e.g., 'What is takaful?')."
+            ))
+        else:
+            # Medical and Islamic domains only get the general web search fallback
+            self.tools.append(Tool(
+                name="GeneralWebSearch",
+                func=TavilySearchResults(max_results=2).invoke,
+                description="Use this tool as a fallback if the RAG tool finds no relevant information or if the query is about a general topic."
+            ))
+        # --- END OF TOOL DEFINITION ---
         
         agent = create_react_agent(llm=self.llm, tools=self.tools, prompt=self.react_docstore_prompt)
         
@@ -216,7 +256,7 @@ class AgenticQA:
             handle_parsing_errors=True,
             verbose=True,
             return_intermediate_steps=True,
-            max_iterations=3
+            max_iterations=5
         )
         logger.info(f"✅ Agent Executor(ReAct Agent) created successfully for '{self.domain}'.")
     
@@ -253,7 +293,8 @@ class AgenticQA:
         
         response = self.agent_executor.invoke({
             "input": query,
-            "chat_history": chat_history
+            "chat_history": chat_history,
+            "domain": self.domain # Pass domain to agent
         })
         thoughts= ""
         
@@ -268,9 +309,7 @@ class AgenticQA:
                 
                 # The logic inside the if block can now use 'action'
                 if isinstance(action, AgentAction) and action.tool:
-                    # Note: We don't need the 'if isinstance(step, (tuple, list))' check anymore 
-                    # because we unpack immediately, and action/observation will be defined.
-                    tool_used = action.tool
+                    tool_used = action.tool #Capture the last tooused
                 
                 # Append Thought, Action, and Action Input (contained in action.log)
                 thought_log.append(action.log)
@@ -280,20 +319,29 @@ class AgenticQA:
             
             thoughts = "\n".join(thought_log)     
 
-        # Assign source based on the LAST tool
-        source = "WebSearch" if tool_used == "WebSearch" else "RAG" if tool_used == "RAG" else "Unknown"
-        logger.info(f"Tool used: {tool_used}, Source determined: {source}")
+        # Assign source based on the LAST tool used
+        if tool_used == "RAG":
+            source = "Etiqa Takaful Database" if self.domain == "insurance" else "Domain Database (RAG)"
+        elif tool_used == "EtiqaWebSearch":
+            source = "Etiqa Website Search"
+        elif tool_used == "GeneralWebSearch":
+            source = "General Web Search"
+        else:
+            source = "Agent Logic"
 
+        logger.info(f"Tool used: {tool_used}, Source determined: {source}")
+        
         # Retrieve context only if the RAG tool was used
-        context = self.retrieval_agent.retrieve(query) if source == "RAG" else "Web search results used."
+        context = self.retrieval_agent.retrieve(query) if source.endswith("(RAG)") or source.startswith("Etiqa Takaful Database") else "Web search results used."
         
         validation = self.answer_validator.validate(query, final_answer, source=source)
         
         return {"answer": final_answer, "context": context, "validation": validation, "source": source, "thoughts": thoughts}
 
 class AnswerValidatorAgent:
-    def __init__(self, llm):
+    def __init__(self, llm,domain="general"):
         self.llm = llm
+        self.domain = domain
         # General validation prompt for non-medical or WebSearch queries
         self.general_prompt = ChatPromptTemplate.from_messages([
             ("system", (
@@ -315,6 +363,11 @@ class AnswerValidatorAgent:
         ])
 
     def validate(self, query, answer, source="RAG"):
+        # --- NEW: Skip validation for insurance domain ---
+        if self.domain == "insurance":
+            logger.info(f"Skipping validation for insurance domain.")
+            return True, "Validation skipped for insurance domain."
+        # --- END OF NEW LOGIC ---
         try:
             # Use medical prompt for RAG responses, general prompt for WebSearch
             prompt = self.medical_prompt if source == "RAG" else self.general_prompt
