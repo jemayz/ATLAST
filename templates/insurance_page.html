@@ -228,7 +228,7 @@
               <p
                 class="text-gray-800 dark:text-white whitespace-pre-wrap text-left"
               >
-                {{ answer_text|safe }}
+                {{ chat.content|safe }}
               </p>
             </div>
           </div>
@@ -316,7 +316,6 @@
         enctype="multipart/form-data"
         class="relative max-w-5xl mx-auto flex items-center space-x-3 p-4"
       >
-        <!-- Removed upload button and file name display -->
         <input
           type="text"
           id="query"

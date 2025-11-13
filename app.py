@@ -1,16 +1,15 @@
-from flask import Flask, request, render_template, session, url_for,redirect
+from flask import Flask, request, render_template, session, url_for,redirect,jsonify
 from flask_session import Session
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import os
 from dotenv import load_dotenv
-import json
 import logging
 import re
 import traceback
-from PIL import Image
 import base64
 from api import api_bp
+
 
 # --- Core Application Imports ---
 from src.medical_swarm import run_medical_swarm

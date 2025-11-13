@@ -1,8 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate
 from typing import List
-from langchain_core.pydantic_v1 import Field
+from pydantic import Field
 from pydantic import BaseModel
-from langchain import hub
+from langchain_classic import hub
 import time, logging, uuid6
 from langchain_core.documents import Document
 from dotenv import find_dotenv, load_dotenv
@@ -11,8 +11,7 @@ from langchain_google_genai import (
     ChatGoogleGenerativeAI)
 from langchain_experimental.text_splitter import SemanticChunker
 import re
-
-
+    
 load_dotenv(find_dotenv())
 
 logging.basicConfig(level=logging.INFO)

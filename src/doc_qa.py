@@ -1,17 +1,21 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain import hub
+from langchain_classic import hub
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains.history_aware_retriever import create_history_aware_retriever
-from langchain.chains.retrieval import create_retrieval_chain
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.tools import Tool
 from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain.agents import AgentExecutor, create_react_agent
+from langchain_community.retrievers import BM25Retriever
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_classic.agents import AgentExecutor, create_react_agent
+from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_chroma import Chroma
-from langchain.schema import AgentAction
+from langchain_core.agents import AgentAction
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.output_parsers import OutputFixingParser
+from flashrank import Ranker, RerankRequest
+from langchain_classic.chains import create_history_aware_retriever, create_retrieval_chain
+# from src.metrics_tracker import MetricsTracker
 import logging
 
 # Setup logging
@@ -261,8 +265,8 @@ class AgenticQA:
         logger.info(f"✅ Agent Executor(ReAct Agent) created successfully for '{self.domain}'.")
     
     def create_rag_chain(self, retriever):
-        from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-        from langchain.chains.combine_documents import create_stuff_documents_chain
+        from langchain_classic.chains import create_history_aware_retriever, create_retrieval_chain
+        from langchain_classic.chains.combine_documents import create_stuff_documents_chain
         history_aware_retriever = create_history_aware_retriever(
             self.llm, retriever, self.contextualize_q_prompt
         )
